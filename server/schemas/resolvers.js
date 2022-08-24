@@ -8,9 +8,7 @@ const resolvers = {
         me: async(parent, args, context) => {
             if(context.user){
                 const userData = await User.findOne({ _id: context.user._id })
-                    .select(-__v -password)
-                    .populate('book');
-
+                   
                     return userData;
             }
             throw new AuthenticationError('Not logged in');        
@@ -18,14 +16,12 @@ const resolvers = {
 
     users: async () => {
         return User.find()
-            .select('-__v -password')
-            .populate('book');
+           
     },
 
     user: async ({ _id }) => {
         return User.findOne({ _id })
-            .select('-__v -password')
-            .populate('book');
+            
     },
 
     books: async () => {
@@ -40,8 +36,8 @@ const resolvers = {
 
             return { token, user };
         },
-        login: async (parent, { username, email, password }) => {
-            const user = await User.FindOne({ username, email, password });
+        login: async (parent, { email, password }) => {
+            const user = await User.findOne({ email, password });
 
             if(!user) {
                 throw new AuthenticationError('Try again!');
@@ -63,7 +59,7 @@ const resolvers = {
                     {_id: context.user._id },
                     { $addToSet: { books: bookId, author, title, description, image, link  }},
                     { new: true }
-                ).populate('books');
+                );
 
                 return updatedUser;
             }
@@ -76,7 +72,7 @@ const resolvers = {
                     {_id: context.user._id },
                     { $removeFromSet: { books: bookId}},
                     { new: true }
-                ).populate('books');
+                )
 
                 return updatedUser;
             }
